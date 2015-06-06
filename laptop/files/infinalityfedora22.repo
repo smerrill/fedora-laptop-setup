@@ -1,0 +1,7 @@
+[home_silencer_infinality-fedora]
+name=home:silencer:infinality-fedora (Fedora_22)
+type=rpm-md
+baseurl=http://download.opensuse.org/repositories/home:/silencer:/infinality-fedora/Fedora_22/
+gpgcheck=1
+gpgkey=http://download.opensuse.org/repositories/home:/silencer:/infinality-fedora/Fedora_22/repodata/repomd.xml.key
+enabled=1

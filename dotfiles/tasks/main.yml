@@ -1,0 +1,25 @@
+---
+# tasks file for dotfiles
+- name: install requisite packages
+  yum:
+    name: "{{ item }}"
+    state: installed
+  sudo: yes
+  with_items:
+    - ctags
+    - 'https://copr-be.cloud.fedoraproject.org/results/stevenmerrill/vcprompt/fedora-rawhide-x86_64/vcprompt-1.2.1-1.fc21/vcprompt-1.2.1-1.fc22.x86_64.rpm' #@TODO: Rebuild for 22?
+    - zsh
+- name: clone dotfiles repo
+  git:
+    repo: ssh://git@github.com/smerrill/dotfiles.git
+    dest: /home/smerrill/dotfiles
+    accept_hostkey: yes
+  ignore_errors: yes
+- name: install dotfiles
+  command: /home/smerrill/dotfiles/install-dotfiles.sh
+  args:
+    chdir: /home/smerrill
+    creates: /home/smerrill/.vim
+# @TODO: This won't work because of https://github.com/gmarik/Vundle.vim/issues/511
+#- name: install plugins with Vundle
+  #command: 'vim +BundleInstall'

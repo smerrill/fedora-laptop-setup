@@ -1,0 +1,179 @@
+# tasks file for laptop
+- name: install RPMFusion
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - 'http://download1.rpmfusion.org/free/fedora/development/22/x86_64/os/rpmfusion-free-release-22-1.noarch.rpm'
+    - 'http://download1.rpmfusion.org/nonfree/fedora/development/22/x86_64/os/rpmfusion-nonfree-release-22-1.noarch.rpm'
+- name: add an Infinality repository
+  copy:
+    src: infinalityfedora22.repo
+    dest: /etc/yum.repos.d/infinalityfedora22.repo
+- name: upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+#@TODO: Reenable when done.
+#- name: install Google Chrome
+  #yum:
+    #pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    #state: installed
+- name: install the Infinality packages
+  shell: 'sudo dnf install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
+  args:
+    creates: /etc/X11/xinit/xinitrc.d/infinality-settings.sh
+- name: download Oracle Java
+  shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm > /tmp/oraclejava.rpm'
+  args:
+    creates: /tmp/oraclejava.rpm
+- name: create Applications folder
+  file:
+    path: /home/smerrill/Applications/
+    state: directory
+    owner: smerrill
+    group: smerrill
+- name: download Minecraft
+  get_url:
+    url: https://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
+    dest: /home/smerrill/Applications/
+- name: install base packages
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - htop
+    - pv
+    - vim-enhanced
+    - git
+    - tmux
+    - pigz
+    - rxvt-unicode
+    - rxvt-unicode-256color
+    - man
+    - zip
+    - unzip
+    - wget
+    - curl
+    - yum-utils
+    - bind-utils
+    - bash-completion
+    - lbzip2
+    - bzip2
+    - python-pip
+    - docker-io
+    - gnome-tweak-tool
+    - tlp
+    - powertop
+    - smartmontools
+    - '@Development Tools'
+    - xsel
+    - '/tmp/oraclejava.rpm'
+    - the_silver_searcher
+    - profile-sync-daemon
+- name: install fonts
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - google-croscore-arimo-fonts
+    - google-croscore-tinos-fonts
+    - google-croscore-cousine-fonts
+    - google-croscore-symbolneu-fonts
+    - google-roboto-fonts
+    - mozilla-fira-mono-fonts
+    - mozilla-fira-sans-fonts
+    - adobe-source-code-pro-fonts
+    - adobe-source-sans-pro-fonts
+    - freetype-freeworld
+- name: let ChromeOS fonts override MSFT fonts
+  file:
+    name: "/etc/fonts/conf.d/{{ item }}"
+    state: absent
+  with_items:
+    - 59-liberation-mono.conf
+    - 59-liberation-sans.conf
+    - 59-liberation-serif.conf
+- name: install ruby and dev libraries
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - ruby
+    - ruby-devel
+    - rubygems
+    - sqlite-devel
+- name: install gems
+  gem:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - timetrap
+    - git-up
+  sudo: no
+- name: load the overlay module at boot
+  copy:
+    dest: /etc/modules-load.d/overlay.conf
+    content: overlay
+- name: copy the PSD configuration
+  copy:
+    src: psd.conf
+    dest: /etc/psd.conf
+- name: start and enable PSD
+  service:
+    name: psd
+    state: started
+    enabled: yes
+- name: copy the TLP configuration
+  copy:
+    src: tlp
+    dest: /etc/default/tlp
+- name: start and enable tlp
+  service:
+    name: tlp
+    state: started
+    enabled: yes
+- name: set up docker support
+  pip:
+    name: docker-py
+    version: 1.1.0
+- name: set my shell to zsh
+  user:
+    name: smerrill
+    shell: /usr/bin/zsh
+- name: create a docker group
+  group:
+    name: docker
+    gid: 498
+- name: put me in the docker and wheel groups
+  user:
+    name: smerrill
+    groups: docker,wheel
+- name: copy the Docker configuration
+  copy:
+    src: docker
+    dest: /etc/sysconfig/docker
+- name: start the docker daemon
+  service:
+    name: docker
+    state: started
+    enabled: yes
+#- name: run dnsdock
+#  docker:
+#    name: dnsdock
+#    image: tonistiigi/dnsdock
+#    state: running
+#    command: '-domain=vm'
+#    net: bridge
+#    ports:
+#      - '172.17.42.1:53:53/udp'
+#    expose:
+#      - '53/udp'
+#    volumes:
+#      - '/var/run/docker.sock:/var/run/docker.sock'
+#    env:
+#      DNSDOCK_NAME: dns
+#      DNSDOCK_IMAGE: system
+#
+#
+#
