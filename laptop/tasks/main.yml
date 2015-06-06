@@ -91,7 +91,7 @@
     - mozilla-fira-sans-fonts
     - adobe-source-code-pro-fonts
     - adobe-source-sans-pro-fonts
-    - freetype-freeworld
+    - open-sans-fonts
 - name: let ChromeOS fonts override MSFT fonts
   file:
     name: "/etc/fonts/conf.d/{{ item }}"
@@ -100,6 +100,8 @@
     - 59-liberation-mono.conf
     - 59-liberation-sans.conf
     - 59-liberation-serif.conf
+# @TODO: sudo ln -s /usr/share/fontconfig/conf.avail.infinality/free/30-metric-aliases-free.conf /etc/fonts/conf.d
+# @TODO: sudo ln -s /usr/share/fontconfig/conf.avail.infinality/free/37-repl-global-free.conf /etc/fonts/conf.d
 - name: install ruby and dev libraries
   yum:
     name: "{{ item }}"
@@ -249,7 +251,7 @@
     mode: 0755
   with_fileglob:
     - /opt/fleet/fleet*/fleet*
-
+#
 # @TODO: Make Dan Walsh sad
 # @TODO: vagrant box add --name fedora-VAGRANTSLASH-22-cloud fedora-VAGRANTSLASH-22-cloud.box
 #- name: run dnsdock
