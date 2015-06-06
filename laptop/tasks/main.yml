@@ -20,7 +20,7 @@
     #pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
     #state: installed
 - name: install the Infinality packages
-  shell: 'sudo dnf install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
+  shell: 'dnf install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
   args:
     creates: /etc/X11/xinit/xinitrc.d/infinality-settings.sh
 - name: download Oracle Java
@@ -71,6 +71,12 @@
     - '/tmp/oraclejava.rpm'
     - the_silver_searcher
     - profile-sync-daemon
+    - vagrant-lxc
+    - vagrant-libvirt
+    - lxc
+    - lxc-extra
+    - lxc-templates
+    - shutter
 - name: install fonts
   yum:
     name: "{{ item }}"
@@ -103,6 +109,12 @@
     - ruby-devel
     - rubygems
     - sqlite-devel
+- name: install Go
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - golang
 - name: install gems
   gem:
     name: "{{ item }}"
@@ -111,6 +123,11 @@
     - timetrap
     - git-up
   sudo: no
+- name: install Leiningen for Clojure dev
+  get_url:
+    url: https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+    dest: /home/smerrill/bin/lein
+    mode: 0755
 - name: load the overlay module at boot
   copy:
     dest: /etc/modules-load.d/overlay.conf
@@ -133,6 +150,15 @@
     name: tlp
     state: started
     enabled: yes
+- name: run and enable libvirt
+  service:
+    name: libvirtd
+    state: started
+    enabled: yes
+- name: configure LXC to use the libvirt bridge
+  copy:
+    src: default.conf
+    dest: /etc/lxc/default.conf
 - name: set up docker support
   pip:
     name: docker-py
@@ -145,19 +171,87 @@
   group:
     name: docker
     gid: 498
-- name: put me in the docker and wheel groups
+- name: put me in the docker, wheel, and vagrant groups
   user:
     name: smerrill
-    groups: docker,wheel
+    groups: docker,wheel,vagrant
 - name: copy the Docker configuration
   copy:
     src: docker
     dest: /etc/sysconfig/docker
-- name: start the docker daemon
+- name: run and enable the docker daemon
   service:
     name: docker
     state: started
     enabled: yes
+- name: create the Terraform folder
+  file:
+    path: /opt/terraform
+    state: directory
+- name: download Terraform
+  get_url:
+    url: https://dl.bintray.com/mitchellh/terraform/terraform_0.5.3_linux_amd64.zip
+    dest: /opt/terraform/terraform.zip
+- name: expand Terraform
+  unarchive:
+    src: /opt/terraform/terraform.zip
+    dest: /opt/terraform/
+- name: copy Terraform binaries into place
+  copy:
+    src: "{{ item }}"
+    dest: /home/smerrill/bin/
+    owner: smerrill
+    group: smerrill
+    mode: 0755
+  with_fileglob:
+    - /opt/terraform/terraform
+    - /opt/terraform/terraform-*
+- name: create the Packer folder
+  file:
+    path: /opt/packer
+    state: directory
+- name: download Packer
+  get_url:
+    url: https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip
+    dest: /opt/packer/packer.zip
+- name: expand Packer
+  unarchive:
+    src: /opt/packer/packer.zip
+    dest: /opt/packer/
+- name: copy Packer binaries into place
+  copy:
+    src: "{{ item }}"
+    dest: /home/smerrill/bin/
+    owner: smerrill
+    group: smerrill
+    mode: 0755
+  with_fileglob:
+    - /opt/packer/packer
+    - /opt/packer/packer-*
+- name: create the Fleet folder
+  file:
+    path: /opt/fleet
+    state: directory
+- name: download Fleet
+  get_url:
+    url: https://github.com/coreos/fleet/releases/download/v0.10.1/fleet-v0.10.1-linux-amd64.tar.gz
+    dest: /opt/fleet/fleet.zip
+- name: expand Fleet
+  unarchive:
+    src: /opt/fleet/fleet.zip
+    dest: /opt/fleet/
+- name: copy Fleet binaries into place
+  copy:
+    src: "{{ item }}"
+    dest: /home/smerrill/bin/
+    owner: smerrill
+    group: smerrill
+    mode: 0755
+  with_fileglob:
+    - /opt/fleet/fleet*/fleet*
+
+# @TODO: Make Dan Walsh sad
+# @TODO: vagrant box add --name fedora-VAGRANTSLASH-22-cloud fedora-VAGRANTSLASH-22-cloud.box
 #- name: run dnsdock
 #  docker:
 #    name: dnsdock
