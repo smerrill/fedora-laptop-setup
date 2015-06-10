@@ -14,13 +14,12 @@
   yum:
     name: '*'
     state: latest
-#@TODO: Reenable when done.
-#- name: install Google Chrome
-  #yum:
-    #pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-    #state: installed
+- name: install Google Chrome
+  yum:
+    pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    state: installed
 - name: install the Infinality packages
-  shell: 'dnf install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
+  shell: 'dnf -y install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
   args:
     creates: /etc/X11/xinit/xinitrc.d/infinality-settings.sh
 - name: download Oracle Java
@@ -101,8 +100,14 @@
     - 59-liberation-mono.conf
     - 59-liberation-sans.conf
     - 59-liberation-serif.conf
-# @TODO: sudo ln -s /usr/share/fontconfig/conf.avail.infinality/free/30-metric-aliases-free.conf /etc/fonts/conf.d
-# @TODO: sudo ln -s /usr/share/fontconfig/conf.avail.infinality/free/37-repl-global-free.conf /etc/fonts/conf.d
+- name: prefer free fonts
+  file:
+    path: "/etc/fonts/conf.d/{{ item }}"
+    src: "/usr/share/fontconfig/conf.avail.infinality/free/{{ item }}"
+    state: link
+  with_items:
+    - 30-metric-aliases-free.conf
+    - 37-repl-global-free.conf
 - name: install ruby and dev libraries
   yum:
     name: "{{ item }}"
@@ -158,6 +163,10 @@
     name: libvirtd
     state: started
     enabled: yes
+- name: allow users in the wheel group to use libvirt
+  copy:
+    dest: /etc/polkit-1/rules.d/10-libvirt-wheel.rules
+    content: 'polkit.addRule(function(action, subject) { if (action.id == "org.libvirt.unix.manage" && subject.isInGroup("wheel")) { return polkit.Result.YES; }});'
 - name: configure LXC to use the libvirt bridge
   copy:
     src: default.conf
