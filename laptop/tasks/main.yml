@@ -4,12 +4,12 @@
     name: "{{ item }}"
     state: installed
   with_items:
-    - 'http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm'
-    - 'http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-22.noarch.rpm'
-- name: add an Infinality repository
-  copy:
-    src: infinalityfedora22.repo
-    dest: /etc/yum.repos.d/infinalityfedora22.repo
+    - 'http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm'
+    - 'http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-23.noarch.rpm'
+#- name: add an Infinality repository
+#  copy:
+#    src: infinalityfedora22.repo
+#    dest: /etc/yum.repos.d/infinalityfedora22.repo
 - name: upgrade all packages
   yum:
     name: '*'
@@ -18,10 +18,10 @@
   yum:
     pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
     state: installed
-- name: install the Infinality packages
-  shell: 'dnf -y install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
-  args:
-    creates: /etc/X11/xinit/xinitrc.d/infinality-settings.sh
+#- name: install the Infinality packages
+#  shell: 'dnf -y install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
+#  args:
+#    creates: /etc/X11/xinit/xinitrc.d/infinality-settings.sh
 - name: download Oracle Java
   shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm > /tmp/oraclejava.rpm'
   args:
@@ -66,6 +66,7 @@
     - powertop
     - smartmontools
     - '@Development Tools'
+    - redhat-rpm-config
     - xsel
     - '/tmp/oraclejava.rpm'
     - the_silver_searcher
@@ -100,14 +101,14 @@
     - 59-liberation-mono.conf
     - 59-liberation-sans.conf
     - 59-liberation-serif.conf
-- name: prefer free fonts
-  file:
-    path: "/etc/fonts/conf.d/{{ item }}"
-    src: "/usr/share/fontconfig/conf.avail.infinality/free/{{ item }}"
-    state: link
-  with_items:
-    - 30-metric-aliases-free.conf
-    - 37-repl-global-free.conf
+#- name: prefer free fonts
+#  file:
+#    path: "/etc/fonts/conf.d/{{ item }}"
+#    src: "/usr/share/fontconfig/conf.avail.infinality/free/{{ item }}"
+#    state: link
+#  with_items:
+#    - 30-metric-aliases-free.conf
+#    - 37-repl-global-free.conf
 - name: install ruby and dev libraries
   yum:
     name: "{{ item }}"
@@ -171,10 +172,10 @@
   copy:
     src: default.conf
     dest: /etc/lxc/default.conf
-- name: set up docker support
-  pip:
-    name: docker-py
-    version: 1.1.0
+#- name: set up docker support
+#  pip:
+#    name: docker-py
+#    version: 1.1.0
 - name: set my shell to zsh
   user:
     name: smerrill
