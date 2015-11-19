@@ -1,15 +1,12 @@
 # tasks file for laptop
-- name: install RPMFusion
+- name: install RPMFusion and Fedy repos
   yum:
     name: "{{ item }}"
     state: installed
   with_items:
     - 'http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm'
     - 'http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-23.noarch.rpm'
-#- name: add an Infinality repository
-#  copy:
-#    src: infinalityfedora22.repo
-#    dest: /etc/yum.repos.d/infinalityfedora22.repo
+    - 'http://folkswithhats.org/repo/23/RPMS/noarch/folkswithhats-release-1.0.1-1.fc23.noarch.rpm'
 - name: upgrade all packages
   yum:
     name: '*'
@@ -78,6 +75,7 @@
     - lxc-templates
     - shutter
     - f2fs-tools
+    - fedy-font-config
 - name: install fonts
   yum:
     name: "{{ item }}"
