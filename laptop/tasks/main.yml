@@ -21,14 +21,14 @@
     creates: /tmp/oraclejava.rpm
 - name: create Applications folder
   file:
-    path: /home/smerrill/Applications/
+    path: "/home/{{ account }}/Applications/"
     state: directory
-    owner: smerrill
-    group: smerrill
+    owner: "{{ account }}"
+    group: "{{ account }}"
 - name: download Minecraft
   get_url:
     url: https://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
-    dest: /home/smerrill/Applications/
+    dest: "/home/{{ account }}/Applications/"
 - name: install base packages
   yum:
     name: "{{ item }}"
@@ -121,7 +121,7 @@
 - name: install Leiningen for Clojure dev
   get_url:
     url: https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
-    dest: /home/smerrill/bin/lein
+    dest: "/home/{{ account }}/bin/lein"
     mode: 0755
 - name: load the overlay module at boot
   copy:
@@ -160,7 +160,7 @@
     dest: /etc/lxc/default.conf
 - name: set my shell to zsh
   user:
-    name: smerrill
+    name: "{{ account }}"
     shell: /usr/bin/zsh
 - name: create a docker group
   group:
@@ -168,7 +168,7 @@
     gid: 498
 - name: put me in the docker, wheel, and vagrant groups
   user:
-    name: smerrill
+    name: "{{ account }}"
     groups: docker,wheel,vagrant
 - name: copy the Docker configuration
   copy:
@@ -194,9 +194,9 @@
 - name: copy Terraform binaries into place
   copy:
     src: "{{ item }}"
-    dest: /home/smerrill/bin/
-    owner: smerrill
-    group: smerrill
+    dest: "/home/{{ account }}/bin/"
+    owner: "{{ account }}"
+    group: "{{ account }}"
     mode: 0755
   with_fileglob:
     - /opt/terraform/terraform
@@ -216,9 +216,9 @@
 - name: copy Packer binaries into place
   copy:
     src: "{{ item }}"
-    dest: /home/smerrill/bin/
-    owner: smerrill
-    group: smerrill
+    dest: "/home/{{ account }}/bin/"
+    owner: "{{ account }}"
+    group: "{{ account }}"
     mode: 0755
   with_fileglob:
     - /opt/packer/packer
@@ -238,9 +238,9 @@
 - name: copy Fleet binaries into place
   copy:
     src: "{{ item }}"
-    dest: /home/smerrill/bin/
-    owner: smerrill
-    group: smerrill
+    dest: "/home/{{ account }}/bin/"
+    owner: "{{ account }}"
+    group: "{{ account }}"
     mode: 0755
   with_fileglob:
     - /opt/fleet/fleet*/fleet*
