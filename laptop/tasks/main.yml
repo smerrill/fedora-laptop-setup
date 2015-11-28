@@ -15,10 +15,6 @@
   yum:
     pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
     state: installed
-#- name: install the Infinality packages
-#  shell: 'dnf -y install --allowerasing freetype-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate'
-#  args:
-#    creates: /etc/X11/xinit/xinitrc.d/infinality-settings.sh
 - name: download Oracle Java
   shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm > /tmp/oraclejava.rpm'
   args:
@@ -99,14 +95,6 @@
     - 59-liberation-mono.conf
     - 59-liberation-sans.conf
     - 59-liberation-serif.conf
-#- name: prefer free fonts
-#  file:
-#    path: "/etc/fonts/conf.d/{{ item }}"
-#    src: "/usr/share/fontconfig/conf.avail.infinality/free/{{ item }}"
-#    state: link
-#  with_items:
-#    - 30-metric-aliases-free.conf
-#    - 37-repl-global-free.conf
 - name: install ruby and dev libraries
   yum:
     name: "{{ item }}"
@@ -170,10 +158,6 @@
   copy:
     src: default.conf
     dest: /etc/lxc/default.conf
-#- name: set up docker support
-#  pip:
-#    name: docker-py
-#    version: 1.1.0
 - name: set my shell to zsh
   user:
     name: smerrill
@@ -260,25 +244,4 @@
     mode: 0755
   with_fileglob:
     - /opt/fleet/fleet*/fleet*
-#
-# @TODO: Make Dan Walsh sad
-# @TODO: vagrant box add --name fedora-VAGRANTSLASH-22-cloud fedora-VAGRANTSLASH-22-cloud.box
-#- name: run dnsdock
-#  docker:
-#    name: dnsdock
-#    image: tonistiigi/dnsdock
-#    state: running
-#    command: '-domain=vm'
-#    net: bridge
-#    ports:
-#      - '172.17.42.1:53:53/udp'
-#    expose:
-#      - '53/udp'
-#    volumes:
-#      - '/var/run/docker.sock:/var/run/docker.sock'
-#    env:
-#      DNSDOCK_NAME: dns
-#      DNSDOCK_IMAGE: system
-#
-#
-#
+# @TODO: Make Dan Walsh sad?
