@@ -6,7 +6,6 @@
   with_items:
     - 'http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm'
     - 'http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-23.noarch.rpm'
-    - 'http://folkswithhats.org/repo/23/RPMS/noarch/folkswithhats-release-1.0.1-1.fc23.noarch.rpm'
 - name: upgrade all packages
   yum:
     name: '*'
@@ -71,30 +70,6 @@
     - lxc-templates
     - shutter
     - f2fs-tools
-    - fedy-font-config
-- name: install fonts
-  yum:
-    name: "{{ item }}"
-    state: installed
-  with_items:
-    - google-croscore-arimo-fonts
-    - google-croscore-tinos-fonts
-    - google-croscore-cousine-fonts
-    - google-croscore-symbolneu-fonts
-    - google-roboto-fonts
-    - mozilla-fira-mono-fonts
-    - mozilla-fira-sans-fonts
-    - adobe-source-code-pro-fonts
-    - adobe-source-sans-pro-fonts
-    - open-sans-fonts
-- name: let ChromeOS fonts override MSFT fonts
-  file:
-    name: "/etc/fonts/conf.d/{{ item }}"
-    state: absent
-  with_items:
-    - 59-liberation-mono.conf
-    - 59-liberation-sans.conf
-    - 59-liberation-serif.conf
 - name: install ruby and dev libraries
   yum:
     name: "{{ item }}"
