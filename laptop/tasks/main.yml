@@ -160,7 +160,7 @@
     state: directory
 - name: download Terraform
   get_url:
-    url: https://dl.bintray.com/mitchellh/terraform/terraform_0.5.3_linux_amd64.zip
+    url: https://releases.hashicorp.com/terraform/0.6.11/terraform_0.6.11_linux_amd64.zip
     dest: /opt/terraform/terraform.zip
 - name: expand Terraform
   unarchive:
@@ -182,7 +182,7 @@
     state: directory
 - name: download Packer
   get_url:
-    url: https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip
+    url: https://releases.hashicorp.com/packer/0.8.6/packer_0.8.6_linux_amd64.zip
     dest: /opt/packer/packer.zip
 - name: expand Packer
   unarchive:
