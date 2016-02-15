@@ -71,6 +71,7 @@
     - lxc-templates
     - shutter
     - f2fs-tools
+    - virt-manager
 - name: install ruby and dev libraries
   yum:
     name: "{{ item }}"
