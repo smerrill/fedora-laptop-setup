@@ -1,11 +1,12 @@
 # tasks file for laptop
-- name: install RPMFusion and Fedy repos
+- name: install RPMFusion and Infinality repos
   yum:
     name: "{{ item }}"
     state: installed
   with_items:
     - 'http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm'
     - 'http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-23.noarch.rpm'
+    - 'http://rpm.danielrenninghoff.com/fedora/23/noarch/infinality-ultimate-repo-23-2.noarch.rpm'
 - name: upgrade all packages
   yum:
     name: '*'
@@ -219,4 +220,12 @@
     mode: 0755
   with_fileglob:
     - /opt/fleet/fleet*/fleet*
+# Yes, done with shell for now because of --allowerasing
+- name: install Infinality
+  shell: 'dnf -y install --allowerasing cairo-infinality-ultimate fontconfig-infinality-ultimate freetype-infinality-ultimate'
+- name: install Infinality fonts
+  shell: 'dnf -y install --allowerasing ibfonts-meta-base ibfonts-meta-extended-lt ibfonts-meta-extended'
+- name: install Infinality Java
+  shell: 'dnf -y install --allowerasing java-1.8.0-openjdk-infinality-ultimate-headless java-1.8.0-openjdk-infinality-ultimate-devel'
+
 # @TODO: Make Dan Walsh sad?
