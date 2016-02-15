@@ -229,5 +229,22 @@
   shell: 'dnf -y install --allowerasing ibfonts-meta-base ibfonts-meta-extended-lt ibfonts-meta-extended'
 - name: install Infinality Java
   shell: 'dnf -y install --allowerasing java-1.8.0-openjdk-infinality-ultimate-headless java-1.8.0-openjdk-infinality-ultimate-devel'
+- name: install fonts
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - google-roboto-fonts
+    - google-roboto-mono-fonts
+    - google-roboto-slab-fonts
+    - google-roboto-condensed-fonts
+    - google-croscore-arimo-fonts
+    - google-croscore-tinos-fonts
+    - google-croscore-cousine-fonts
+    - google-croscore-symbolneu-fonts
+- name: set up custom font substitutions
+  copy:
+    src: 35-repl-custom.conf
+    dest: /usr/share/fontconfig/conf.avail.infinality/35-repl-custom.conf
 
 # @TODO: Make Dan Walsh sad?
