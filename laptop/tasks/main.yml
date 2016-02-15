@@ -103,6 +103,8 @@
   copy:
     dest: /etc/modules-load.d/overlay.conf
     content: overlay
+- name: load the overlay module now
+  shell: 'modprobe overlay'
 - name: copy the PSD configuration
   copy:
     src: psd.conf
