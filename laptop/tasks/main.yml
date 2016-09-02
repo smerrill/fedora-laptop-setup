@@ -1,12 +1,14 @@
 # tasks file for laptop
+- name: install some dependencies by hand
+  raw: 'dnf install -y yum python-dnf libselinux-python'
 - name: install RPMFusion and Infinality repos
   yum:
     name: "{{ item }}"
     state: installed
   with_items:
-    - 'http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm'
-    - 'http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-23.noarch.rpm'
-    - 'http://rpm.danielrenninghoff.com/fedora/23/noarch/infinality-ultimate-repo-23-2.noarch.rpm'
+    - "http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm"
+    - "http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_version }}.noarch.rpm"
+    #- "http://rpm.danielrenninghoff.com/fedora/{{ ansible_distribution_version }}/noarch/infinality-ultimate-repo-{{ ansible_distribution_version }}-2.noarch.rpm"
 - name: upgrade all packages
   yum:
     name: '*'
@@ -16,7 +18,7 @@
     pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
     state: installed
 - name: download Oracle Java
-  shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm > /tmp/oraclejava.rpm'
+  shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.rpm > /tmp/oraclejava.rpm'
   args:
     creates: /tmp/oraclejava.rpm
 - name: create Applications folder
@@ -41,7 +43,7 @@
     - tmux
     - pigz
     - rxvt-unicode
-    - rxvt-unicode-256color
+    - rxvt-unicode-256color-ml
     - man
     - zip
     - unzip
@@ -63,7 +65,7 @@
     - xsel
     - '/tmp/oraclejava.rpm'
     - the_silver_searcher
-    - profile-sync-daemon
+    #- profile-sync-daemon
     - vagrant-lxc
     - vagrant-libvirt
     - lxc
@@ -72,49 +74,33 @@
     - shutter
     - f2fs-tools
     - virt-manager
-- name: install ruby and dev libraries
-  yum:
-    name: "{{ item }}"
-    state: installed
-  with_items:
-    - ruby
-    - ruby-devel
-    - rubygems
-    - sqlite-devel
+    - freetype-freeworld
 - name: install Go
   yum:
     name: "{{ item }}"
     state: installed
   with_items:
     - golang
-- name: install gems
-  gem:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - timetrap
-    - git-up
-  sudo: no
 - name: install Leiningen for Clojure dev
   get_url:
     url: https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
     dest: "/home/{{ account }}/bin/lein"
     mode: 0755
-- name: load the overlay module at boot
-  copy:
-    dest: /etc/modules-load.d/overlay.conf
-    content: overlay
-- name: load the overlay module now
-  shell: 'modprobe overlay'
-- name: copy the PSD configuration
-  copy:
-    src: psd.conf
-    dest: /etc/psd.conf
-- name: start and enable PSD
-  service:
-    name: psd
-    state: started
-    enabled: yes
+#- name: load the overlay module at boot
+  #copy:
+    #dest: /etc/modules-load.d/overlay.conf
+    #content: overlay
+#- name: load the overlay module now
+  #shell: 'modprobe overlay'
+#- name: copy the PSD configuration
+  #copy:
+    #src: psd.conf
+    #dest: /etc/psd.conf
+#- name: start and enable PSD
+  #service:
+    #name: psd
+    #state: started
+    #enabled: yes
 - name: copy the TLP configuration
   copy:
     src: tlp
@@ -164,7 +150,7 @@
     state: directory
 - name: download Terraform
   get_url:
-    url: https://releases.hashicorp.com/terraform/0.6.11/terraform_0.6.11_linux_amd64.zip
+    url: https://releases.hashicorp.com/terraform/0.7.2/terraform_0.7.2_linux_amd64.zip
     dest: /opt/terraform/terraform.zip
 - name: expand Terraform
   unarchive:
@@ -186,7 +172,7 @@
     state: directory
 - name: download Packer
   get_url:
-    url: https://releases.hashicorp.com/packer/0.8.6/packer_0.8.6_linux_amd64.zip
+    url: https://releases.hashicorp.com/packer/0.10.1/packer_0.10.1_linux_amd64.zip
     dest: /opt/packer/packer.zip
 - name: expand Packer
   unarchive:
@@ -202,34 +188,38 @@
   with_fileglob:
     - /opt/packer/packer
     - /opt/packer/packer-*
-- name: create the Fleet folder
-  file:
-    path: /opt/fleet
-    state: directory
-- name: download Fleet
-  get_url:
-    url: https://github.com/coreos/fleet/releases/download/v0.10.1/fleet-v0.10.1-linux-amd64.tar.gz
-    dest: /opt/fleet/fleet.zip
-- name: expand Fleet
-  unarchive:
-    src: /opt/fleet/fleet.zip
-    dest: /opt/fleet/
-- name: copy Fleet binaries into place
-  copy:
-    src: "{{ item }}"
-    dest: "/home/{{ account }}/bin/"
-    owner: "{{ account }}"
-    group: "{{ account }}"
-    mode: 0755
-  with_fileglob:
-    - /opt/fleet/fleet*/fleet*
+#- name: create the Fleet folder
+  #file:
+    #path: /opt/fleet
+    #state: directory
+#- name: download Fleet
+  #get_url:
+    #url: https://github.com/coreos/fleet/releases/download/v0.11.8/fleet-v0.11.8-linux-amd64.tar.gz
+    #dest: /opt/fleet/fleet.zip
+#- name: expand Fleet
+  #unarchive:
+    #src: /opt/fleet/fleet.zip
+    #dest: /opt/fleet/
+#- name: copy Fleet binaries into place
+  #copy:
+    #src: "{{ item }}"
+    #dest: "/home/{{ account }}/bin/"
+    #owner: "{{ account }}"
+    #group: "{{ account }}"
+    #mode: 0755
+  #with_fileglob:
+    #- /opt/fleet/fleet*/fleet*
 # Yes, done with shell for now because of --allowerasing
-- name: install Infinality
-  shell: 'dnf -y install --allowerasing cairo-infinality-ultimate fontconfig-infinality-ultimate freetype-infinality-ultimate'
-- name: install Infinality fonts
-  shell: 'dnf -y install --allowerasing ibfonts-meta-base ibfonts-meta-extended-lt ibfonts-meta-extended'
-- name: install Infinality Java
-  shell: 'dnf -y install --allowerasing java-1.8.0-openjdk-infinality-ultimate-headless java-1.8.0-openjdk-infinality-ultimate-devel'
+#- name: install Infinality
+  #shell: 'dnf -y install --allowerasing cairo-infinality-ultimate fontconfig-infinality-ultimate freetype-infinality-ultimate'
+#- name: install Infinality fonts
+  #shell: 'dnf -y install --allowerasing ibfonts-meta-base ibfonts-meta-extended-lt ibfonts-meta-extended'
+#- name: install Infinality Java
+  #shell: 'dnf -y install --allowerasing java-1.8.0-openjdk-infinality-ultimate-headless java-1.8.0-openjdk-infinality-ultimate-devel'
+#- name: set up custom font substitutions
+  #copy:
+    #src: 35-repl-custom.conf
+    #dest: /usr/share/fontconfig/conf.avail.infinality/35-repl-custom.conf
 - name: install fonts
   yum:
     name: "{{ item }}"
@@ -243,9 +233,21 @@
     - google-croscore-tinos-fonts
     - google-croscore-cousine-fonts
     - google-croscore-symbolneu-fonts
-- name: set up custom font substitutions
-  copy:
-    src: 35-repl-custom.conf
-    dest: /usr/share/fontconfig/conf.avail.infinality/35-repl-custom.conf
+- name: download Input fonts
+  get_url:
+    url: 'http://input.fontbureau.com/build/?fontSelection=whole&a=ss&g=ss&i=serif&l=serif&zero=slash&asterisk=0&braces=0&preset=default&line-height=1&accept=I+do&email='
+    dest: "/home/{{ account }}/Downloads/input-fonts.zip"
+    timeout: 90
+- name: create the fonts directory
+  file:
+    dest: "/home/{{ account }}/.fonts/input"
+    owner: "{{ account }}"
+    group: "{{ account }}"
+    state: directory
+    recurse: true
+- name: expand Input fonts
+  unarchive:
+    src: "/home/{{ account }}/Downloads/input-fonts.zip"
+    dest: "/home/{{ account }}/.fonts/input/"
 
 # @TODO: Make Dan Walsh sad?
