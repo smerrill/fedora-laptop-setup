@@ -250,4 +250,10 @@
     src: "/home/{{ account }}/Downloads/input-fonts.zip"
     dest: "/home/{{ account }}/.fonts/input/"
 
-# @TODO: Make Dan Walsh sad?
+# @TODO: Implement more font fixes:
+# cd /etc/fonts/conf.d
+# sudo ln -s /usr/share/fontconfig/conf.avail/10-autohint.conf
+# sudo ln -s /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf
+# sudo ln -s /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf
+# gsettings set org.gnome.settings-daemon.plugins.xsettings antialiasing rgba
+# gsettings set org.gnome.settings-daemon.plugins.xsettings hinting slight
