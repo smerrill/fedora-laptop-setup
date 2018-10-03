@@ -1,13 +1,13 @@
 ---
 # tasks file for dotfiles
 - name: install requisite packages
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
-  sudo: yes
+  become: yes
   with_items:
     - ctags
-    - 'https://copr-be.cloud.fedoraproject.org/results/stevenmerrill/vcprompt/fedora-rawhide-x86_64/vcprompt-1.2.1-1.fc21/vcprompt-1.2.1-1.fc22.x86_64.rpm' #@TODO: Rebuild for 22?
+    #- 'https://copr-be.cloud.fedoraproject.org/results/stevenmerrill/vcprompt/fedora-rawhide-x86_64/vcprompt-1.2.1-1.fc21/vcprompt-1.2.1-1.fc22.x86_64.rpm' #@TODO: Rebuild for 22?
     - zsh
 - name: clone dotfiles repo
   git:

@@ -1,26 +1,27 @@
 # tasks file for laptop
-- name: install some dependencies by hand
-  raw: 'dnf install -y yum python-dnf libselinux-python'
+#- name: install some dependencies by hand
+  #raw: 'dnf install -y yum python-dnf libselinux-python'
 - name: install RPMFusion and Infinality repos
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
   with_items:
     - "http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm"
     - "http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_version }}.noarch.rpm"
     #- "http://rpm.danielrenninghoff.com/fedora/{{ ansible_distribution_version }}/noarch/infinality-ultimate-repo-{{ ansible_distribution_version }}-2.noarch.rpm"
+    - libselinux-python
 - name: upgrade all packages
-  yum:
+  dnf:
     name: '*'
     state: latest
-- name: install Google Chrome
-  yum:
-    pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-    state: installed
-- name: download Oracle Java
-  shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.rpm > /tmp/oraclejava.rpm'
-  args:
-    creates: /tmp/oraclejava.rpm
+#- name: install Google Chrome
+  #dnf:
+    #pkg: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    #state: installed
+#- name: download Oracle Java
+  #shell: 'curl -v -j -k -L -H "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.rpm > /tmp/oraclejava.rpm'
+  #args:
+    #creates: /tmp/oraclejava.rpm
 - name: create Applications folder
   file:
     path: "/home/{{ account }}/Applications/"
@@ -32,7 +33,7 @@
     url: https://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
     dest: "/home/{{ account }}/Applications/"
 - name: install base packages
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
   with_items:
@@ -49,7 +50,6 @@
     - unzip
     - wget
     - curl
-    - yum-utils
     - bind-utils
     - bash-completion
     - lbzip2
@@ -63,7 +63,7 @@
     - '@Development Tools'
     - redhat-rpm-config
     - xsel
-    - '/tmp/oraclejava.rpm'
+    #- '/tmp/oraclejava.rpm'
     - the_silver_searcher
     #- profile-sync-daemon
     - vagrant-lxc
@@ -76,7 +76,7 @@
     - virt-manager
     - freetype-freeworld
 - name: install Go
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
   with_items:
@@ -144,50 +144,50 @@
     name: docker
     state: started
     enabled: yes
-- name: create the Terraform folder
-  file:
-    path: /opt/terraform
-    state: directory
-- name: download Terraform
-  get_url:
-    url: https://releases.hashicorp.com/terraform/0.7.2/terraform_0.7.2_linux_amd64.zip
-    dest: /opt/terraform/terraform.zip
-- name: expand Terraform
-  unarchive:
-    src: /opt/terraform/terraform.zip
-    dest: /opt/terraform/
-- name: copy Terraform binaries into place
-  copy:
-    src: "{{ item }}"
-    dest: "/home/{{ account }}/bin/"
-    owner: "{{ account }}"
-    group: "{{ account }}"
-    mode: 0755
-  with_fileglob:
-    - /opt/terraform/terraform
-    - /opt/terraform/terraform-*
-- name: create the Packer folder
-  file:
-    path: /opt/packer
-    state: directory
-- name: download Packer
-  get_url:
-    url: https://releases.hashicorp.com/packer/0.10.1/packer_0.10.1_linux_amd64.zip
-    dest: /opt/packer/packer.zip
-- name: expand Packer
-  unarchive:
-    src: /opt/packer/packer.zip
-    dest: /opt/packer/
-- name: copy Packer binaries into place
-  copy:
-    src: "{{ item }}"
-    dest: "/home/{{ account }}/bin/"
-    owner: "{{ account }}"
-    group: "{{ account }}"
-    mode: 0755
-  with_fileglob:
-    - /opt/packer/packer
-    - /opt/packer/packer-*
+#- name: create the Terraform folder
+  #file:
+    #path: /opt/terraform
+    #state: directory
+#- name: download Terraform
+  #get_url:
+    #url: https://releases.hashicorp.com/terraform/0.7.2/terraform_0.7.2_linux_amd64.zip
+    #dest: /opt/terraform/terraform.zip
+#- name: expand Terraform
+  #unarchive:
+    #src: /opt/terraform/terraform.zip
+    #dest: /opt/terraform/
+#- name: copy Terraform binaries into place
+  #copy:
+    #src: "{{ item }}"
+    #dest: "/home/{{ account }}/bin/"
+    #owner: "{{ account }}"
+    #group: "{{ account }}"
+    #mode: 0755
+  #with_fileglob:
+    #- /opt/terraform/terraform
+    #- /opt/terraform/terraform-*
+#- name: create the Packer folder
+  #file:
+    #path: /opt/packer
+    #state: directory
+#- name: download Packer
+  #get_url:
+    #url: https://releases.hashicorp.com/packer/0.10.1/packer_0.10.1_linux_amd64.zip
+    #dest: /opt/packer/packer.zip
+#- name: expand Packer
+  #unarchive:
+    #src: /opt/packer/packer.zip
+    #dest: /opt/packer/
+#- name: copy Packer binaries into place
+  #copy:
+    #src: "{{ item }}"
+    #dest: "/home/{{ account }}/bin/"
+    #owner: "{{ account }}"
+    #group: "{{ account }}"
+    #mode: 0755
+  #with_fileglob:
+    #- /opt/packer/packer
+    #- /opt/packer/packer-*
 #- name: create the Fleet folder
   #file:
     #path: /opt/fleet
@@ -221,7 +221,7 @@
     #src: 35-repl-custom.conf
     #dest: /usr/share/fontconfig/conf.avail.infinality/35-repl-custom.conf
 - name: install fonts
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
   with_items:
